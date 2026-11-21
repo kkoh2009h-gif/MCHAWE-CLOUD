@@ -2,6 +2,9 @@ name: Build PSBox PS4 baseline
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-psbox-baseline.yml'
 
 permissions:
   contents: read
