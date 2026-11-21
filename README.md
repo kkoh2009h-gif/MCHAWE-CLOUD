@@ -10,7 +10,7 @@
 
 ## محرك المشروع الأساسي
 - **PSBox Cloud Gaming**: https://github.com/RafaelNGP/psbox-cloud-gaming
-- **الإصدارات الرسمية**: https://github.com/RafaelNGP/xbox-cloud-gaming-ps5/releases/latest
+- **الإصدارات الرسمية**: https://github.com/RafaelNGP/psbox-cloud-gaming/releases/latest
 - **ترخيص upstream**: GPL-3.0-or-later (يجب الحفاظ على إشعارات الترخيص وحقوق المؤلف وشروط إعادة التوزيع عند الاشتقاق).
 
 PSBox يوفّر محركاً أصلياً يتضمن كتالوج Xbox Cloud Gaming، تسجيل الدخول عبر Microsoft، streaming، ودعم PS4 مع GoldHEN بحسب توثيق upstream. يتطلب حساب Microsoft وخطة اشتراك/خدمة مؤهلة؛ المشروع لا يتجاوز متطلبات الاشتراك أو القيود الإقليمية.
