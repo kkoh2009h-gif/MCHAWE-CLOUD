@@ -26,6 +26,16 @@ PSBox يوفّر محركاً أصلياً يتضمن كتالوج Xbox Cloud Ga
 4. بناء PS4 PKG باستخدام OpenOrbis toolchain.
 5. اختبار PKG فعلياً على PS4 وGoldHEN قبل إعلان جاهزيته.
 
+## بناء نسخة PSBox الأصلية عبر GitHub Actions
+
+أضيف workflow يدوي باسم `.github/workflows/build-psbox-baseline.yml`:
+- يجلب PSBox عند commit محدد مع submodules.
+- يثبت أدوات البناء في Ubuntu.
+- ينفذ إعداد CMake وبناء Release ومحاولة إنشاء PKG.
+- يرفع ملف PKG كـ Artifact لمدة 7 أيام إذا نجحت جميع الخطوات.
+
+**تنبيه:** لم يتم تشغيل الـ workflow من هنا؛ واجهة GitHub المتاحة لا تسمح بتشغيل workflow dispatch. لذلك البناء غير متحقق بعد، وقد يحتاج workflow إلى إصلاحات بحسب نتيجة أول تشغيل.
+
 ## الواجهة التجريبية الحالية
 فتح `index.html` يعرض نموذج واجهة فقط؛ لا يُعد تشغيل الألعاب أو بثها.
 
