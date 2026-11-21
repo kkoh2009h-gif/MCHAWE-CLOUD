@@ -18,7 +18,12 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build clang llvm lld python3 curl nasm
+          sudo apt-get install -y cmake ninja-build clang llvm lld python3 curl nasm build-essential pkg-config autoconf automake libtool libssl-dev
+
+      - name: Install .NET runtime for PkgTool.Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
       - name: Fetch OpenOrbis toolchain
         working-directory: psbox
