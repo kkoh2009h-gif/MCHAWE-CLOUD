@@ -70,7 +70,7 @@ jobs:
           cp build-ps4/build.ninja build-ps4/diagnostics/ 2>/dev/null || true
           git submodule status > build-ps4/diagnostics/submodules.txt 2>&1 || true
           git rev-parse HEAD > build-ps4/diagnostics/upstream-commit.txt
-          find build-ps4 -maxdepth 2 -type f -name '*.log' -exec cp {} build-ps4/diagnostics/ \\; 2>/dev/null || true
+          find build-ps4 -maxdepth 2 -type f -name '*.log' -exec cp {} build-ps4/diagnostics/ + 2>/dev/null || true
 
       - name: Validate package and generate checksum
         working-directory: psbox
