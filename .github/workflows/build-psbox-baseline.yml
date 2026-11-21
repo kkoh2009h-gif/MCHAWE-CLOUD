@@ -44,10 +44,31 @@ jobs:
         working-directory: psbox
         run: tools/ps4/package.sh build-ps4
 
-      - name: Upload upstream baseline PKG
+      - name: Validate package and generate checksum
+        working-directory: psbox
+        run: |
+          pkg_dir="build-ps4/pkg"
+          pkg="$(find "$pkg_dir" -maxdepth 1 -type f -name '*.pkg' -print -quit)"
+          test -n "$pkg" || { echo "No PKG generated" >&2; exit 1; }
+          sha256sum "$pkg" > "$pkg.sha256"
+          {
+            echo "Upstream repository: RafaelNGP/psbox-cloud-gaming"
+            echo "Pinned commit: 40c61da5fc9720e5078b0d1473931864488aa1b1"
+            echo "Build target: PS4 / OpenOrbis"
+            echo "Build type: Release"
+            echo "Package: $(basename "$pkg")"
+            echo "Created UTC: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > "$pkg_dir/build-info.txt"
+          cat "$pkg.sha256"
+          cat "$pkg_dir/build-info.txt"
+
+      - name: Upload upstream baseline PKG and build proof
         uses: actions/upload-artifact@v4
         with:
           name: psbox-ps4-baseline-pkg
-          path: psbox/build-ps4/pkg/*.pkg
+          path: |
+            psbox/build-ps4/pkg/*.pkg
+            psbox/build-ps4/pkg/*.sha256
+            psbox/build-ps4/pkg/build-info.txt
           if-no-files-found: error
           retention-days: 7
