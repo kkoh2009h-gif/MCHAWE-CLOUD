@@ -3,6 +3,9 @@ name: Build PSBox PS4 baseline
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build-ps4-baseline:
     runs-on: ubuntu-24.04
@@ -14,6 +17,20 @@ jobs:
           ref: 40c61da5fc9720e5078b0d1473931864488aa1b1
           submodules: recursive
           path: psbox
+
+      - name: Inspect pinned source and environment
+        working-directory: psbox
+        run: |
+          echo "Pinned upstream revision:"
+          git rev-parse HEAD
+          echo "Submodule status:"
+          git submodule status
+          echo "Host tools before setup:"
+          cmake --version
+          ninja --version
+          clang --version | head -n 2
+          python3 --version
+          git status --short
 
       - name: Install build dependencies
         run: |
@@ -36,13 +53,24 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=cmake/ps4.toolchain.cmake \
             -DCMAKE_BUILD_TYPE=Release
 
-      - name: Build PS4
+      - name: Build PS4 (verbose diagnostics)
         working-directory: psbox
-        run: ninja -C build-ps4
+        run: ninja -C build-ps4 -v
 
       - name: Package PS4 PKG
         working-directory: psbox
         run: tools/ps4/package.sh build-ps4
+
+      - name: Collect build diagnostics on failure
+        if: failure()
+        working-directory: psbox
+        run: |
+          mkdir -p build-ps4/diagnostics
+          cp build-ps4/CMakeCache.txt build-ps4/diagnostics/ 2>/dev/null || true
+          cp build-ps4/build.ninja build-ps4/diagnostics/ 2>/dev/null || true
+          git submodule status > build-ps4/diagnostics/submodules.txt 2>&1 || true
+          git rev-parse HEAD > build-ps4/diagnostics/upstream-commit.txt
+          find build-ps4 -maxdepth 2 -type f -name '*.log' -exec cp {} build-ps4/diagnostics/ \\; 2>/dev/null || true
 
       - name: Validate package and generate checksum
         working-directory: psbox
@@ -61,6 +89,15 @@ jobs:
           } > "$pkg_dir/build-info.txt"
           cat "$pkg.sha256"
           cat "$pkg_dir/build-info.txt"
+
+      - name: Upload diagnostics (failure only)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: psbox-ps4-build-diagnostics
+          path: psbox/build-ps4/diagnostics/
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload upstream baseline PKG and build proof
         uses: actions/upload-artifact@v4
