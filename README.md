@@ -1,5 +1,16 @@
 # MCHAWE CLOUD
 
+## هدف النسخة الحالية: تطبيق PS4 بصيغة PKG
+
+المطلوب النهائي هو تطبيق PS4 أصلي قابل للتثبيت عبر ملف `.pkg` على جهاز PS4 مع GoldHEN. الموقع وPWA ليسا المنتج النهائي.
+
+## وضع البناء الأصلي الحالي
+- `ps4/src/main.c` و`ps4/Makefile` ينتجان ELF/`eboot.bin` عبر OpenOrbis.
+- Workflow `.github/workflows/build-ps4.yml` يبني مخرجات native scaffold ويرفعها مع `build-info.txt` و`SHA256SUMS`.
+- **هذا الـworkflow لا ينشئ PKG حتى الآن**؛ لا يُعد التطبيق جاهزاً للتثبيت.
+- هدف التطوير التالي هو توفير GP4/metadata/package step موثوقة ثم بناء PKG والتحقق من Artifact قبل تسليم المستخدم.
+
+
 مشروع MCHAWE CLOUD هدفه تقديم تجربة Xbox Cloud Gaming على PS4 بشكل يحمل اسم وهوية MCHAWE، بالاعتماد على محرك PSBox Cloud Gaming الأصلي بدلاً من واجهة ويب تجريبية.
 
 ## الوضع الحالي (بصراحة)
