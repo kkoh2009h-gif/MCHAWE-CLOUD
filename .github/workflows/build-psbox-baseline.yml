@@ -1,0 +1,48 @@
+name: Build PSBox PS4 baseline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ps4-baseline:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout upstream PSBox
+        uses: actions/checkout@v4
+        with:
+          repository: RafaelNGP/psbox-cloud-gaming
+          ref: 40c61da5fc9720e5078b0d1473931864488aa1b1
+          submodules: recursive
+          path: psbox
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build clang llvm lld python3 curl nasm
+
+      - name: Fetch OpenOrbis toolchain
+        working-directory: psbox
+        run: tools/ps4/fetch-toolchain.sh
+
+      - name: Configure PS4 Release
+        working-directory: psbox
+        run: |
+          cmake -S . -B build-ps4 -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/ps4.toolchain.cmake \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build PS4
+        working-directory: psbox
+        run: ninja -C build-ps4
+
+      - name: Package PS4 PKG
+        working-directory: psbox
+        run: tools/ps4/package.sh build-ps4
+
+      - name: Upload upstream baseline PKG
+        uses: actions/upload-artifact@v4
+        with:
+          name: psbox-ps4-baseline-pkg
+          path: psbox/build-ps4/pkg/*.pkg
+          if-no-files-found: error
+          retention-days: 7
