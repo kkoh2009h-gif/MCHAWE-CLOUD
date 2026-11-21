@@ -12,11 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build native PS4 ELF with OpenOrbis
-        uses: OpenOrbis/toolchain-action@main
+      - name: Checkout pinned PSBox toolchain fetch helper
+        uses: actions/checkout@v4
         with:
-          version: v0.5.4
-          command: cd ps4 && make
+          repository: RafaelNGP/psbox-cloud-gaming
+          ref: 40c61da5fc9720e5078b0d1473931864488aa1b
+          path: psbox-toolchain-source
+
+      - name: Install OpenOrbis toolchain
+        run: |
+          bash psbox-toolchain-source/tools/ps4/fetch-toolchain.sh "$RUNNER_TEMP/openorbis"
+          echo "OO_PS4_TOOLCHAIN=$RUNNER_TEMP/openorbis" >> "$GITHUB_ENV"
+
+      - name: Build native PS4 ELF with OpenOrbis
+        run: make -C ps4
       - name: Create native build manifest and checksums
         working-directory: ps4
         run: |
