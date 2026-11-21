@@ -1,0 +1,27 @@
+name: Build MCHAWE CLOUD PS4
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ps4/**'
+      - '.github/workflows/build-ps4.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build native PS4 ELF with OpenOrbis
+        uses: OpenOrbis/toolchain-action@main
+        with:
+          version: v0.5.4
+          command: cd ps4 && make
+      - name: Upload ELF and eboot output
+        uses: actions/upload-artifact@v4
+        with:
+          name: MCHAWE-CLOUD-PS4-native-build
+          path: |
+            ps4/eboot.bin
+            ps4/build/*.elf
+            ps4/build/*.oelf
