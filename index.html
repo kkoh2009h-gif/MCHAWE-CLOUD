@@ -39,6 +39,20 @@ function toggleModalFavorite(){if(!selectedGame)return;const n=selectedGame.name
 function setCategory(value){categoryFilter=value;favOnly=false;document.getElementById("favBtn").classList.remove("active");document.getElementById("allBtn").classList.add("active");render()}\nfunction showFavorites(){favOnly=true;categoryFilter="all";document.getElementById("categorySelect").value="all";document.getElementById("favBtn").classList.add("active");document.getElementById("allBtn").classList.remove("active");render();scrollToLibrary()}
 function showAll(){favOnly=false;categoryFilter="all";document.getElementById("categorySelect").value="all";document.getElementById("allBtn").classList.add("active");document.getElementById("favBtn").classList.remove("active");render()}
 function scrollToLibrary(){document.getElementById("library").scrollIntoView({behavior:"smooth"})}
+let installPromptEvent=null;
+function installApp(){
+  if(!installPromptEvent){alert("التثبيت غير متاح حالياً. افتح الموقع من متصفح يدعم تثبيت التطبيقات.");return}
+  installPromptEvent.prompt();
+  installPromptEvent.userChoice.then(()=>{installPromptEvent=null;document.getElementById("installBtn").style.display="none"});
+}
+window.addEventListener("beforeinstallprompt",event=>{
+  event.preventDefault();installPromptEvent=event;
+  const btn=document.getElementById("installBtn");if(btn)btn.style.display="inline-flex";
+});
+window.addEventListener("appinstalled",()=>{installPromptEvent=null;const btn=document.getElementById("installBtn");if(btn)btn.style.display="none"});
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(err=>console.warn("SW registration failed",err)));
+}
 function cloudInfo(){alert("البث السحابي يحتاج خدمة رسمية وحساب/اشتراك مناسب. غير متاح في النسخة التجريبية.")}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDetail();return}if(["ArrowRight","ArrowLeft","ArrowDown","ArrowUp"].includes(e.key)){const cards=[...document.querySelectorAll("#games .game")];const current=cards.indexOf(document.activeElement);if(!cards.length)return;let next=current<0?0:current;if(e.key==="ArrowRight")next=Math.max(0,next-1);if(e.key==="ArrowLeft")next=Math.min(cards.length-1,next+1);if(e.key==="ArrowDown")next=Math.min(cards.length-1,next+2);if(e.key==="ArrowUp")next=Math.max(0,next-2);if(current>=0){e.preventDefault();cards[next]?.focus()}}});
 render();
