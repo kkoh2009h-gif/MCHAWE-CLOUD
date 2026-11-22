@@ -12,6 +12,7 @@ permissions:
 jobs:
   build-ps4-baseline:
     runs-on: ubuntu-24.04
+    timeout-minutes: 180
     steps:
       - name: Checkout upstream PSBox
         uses: actions/checkout@v4
@@ -38,7 +39,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build clang llvm lld python3 curl nasm build-essential pkg-config autoconf automake libtool libssl-dev
+          sudo apt-get install -y cmake ninja-build clang-18 llvm-18 lld-18 llvm-18-dev python3 curl nasm build-essential pkg-config autoconf automake libtool libssl-dev git
 
       - name: Install .NET runtime for PkgTool.Core
         uses: actions/setup-dotnet@v4
@@ -48,6 +49,12 @@ jobs:
       - name: Fetch OpenOrbis toolchain
         working-directory: psbox
         run: tools/ps4/fetch-toolchain.sh
+
+      - name: Confirm toolchain versions
+        run: |
+          clang-18 --version
+          lld-18 --version
+          dotnet --info
 
       - name: Configure PS4 Release
         working-directory: psbox
